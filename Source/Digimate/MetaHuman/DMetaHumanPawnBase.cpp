@@ -151,67 +151,78 @@ void ADMetaHumanPawnBase::OnSocketMessage(const FString& Message)
     {
         FString url;
         FString text;
-        if (JsonObject->TryGetStringField("url", url) && JsonObject->TryGetStringField("text", text))
-        {
-            // Extract word information from the "speech" array
-            TArray<FSingeWordData> WordArray;
-
-            TArray<TSharedPtr<FJsonValue>> SpeechArray;
-            if (JsonObject->HasField("speech"))
-            {
-                SpeechArray = JsonObject->GetArrayField("speech");
-
-                for (const auto& SpeechValue : SpeechArray)
-                {
-                    TSharedPtr<FJsonObject> SpeechObject = SpeechValue->AsObject();
-                    if (SpeechObject)
-                    {
-                        FString Word;
-                        if (SpeechObject->TryGetStringField("word", Word))
-                        {
-                            float Start = SpeechObject->GetNumberField("start");
-                            float End = SpeechObject->GetNumberField("end");
-
-                            WordArray.Add(FSingeWordData(Word, Start, End));
-                        }
-                    }
-                }
-            }
-
-            TArray<FSingeWordData> EmotionsList;
-
-            TArray<TSharedPtr<FJsonValue>> EmotionsArray;
-            if (JsonObject->HasField("emotions"))
-            {
-                EmotionsArray = JsonObject->GetArrayField("emotions");
-
-                for (const auto& EmotionValue : EmotionsArray)
-                {
-                    TSharedPtr<FJsonObject> EmotionObject = EmotionValue->AsObject();
-                    if (EmotionObject)
-                    {
-                        float Start = EmotionObject->GetNumberField("start");
-                        float End = EmotionObject->GetNumberField("end");
-                        float AnimIntensity = EmotionObject->GetNumberField("rate");
-
-                        FString Emotion;
-                        EmotionObject->TryGetStringField("emotion", Emotion);
-
-                        EmotionsList.Add(FSingeWordData(Emotion, Start, End));
-                    }
-                }
-            }
-
-            GEngine->AddOnScreenDebugMessage(-1, 15.0f, FColor::Green, "speech length: " + FString::FromInt(WordArray.Num()));
-
-            OnPlayAudioFile(url, text, WordArray, EmotionsList);
-        }
-        else
+        if (!JsonObject->TryGetStringField("url", url) || !JsonObject->TryGetStringField("text", text))
         {
             GEngine->AddOnScreenDebugMessage(-1, 15.0f, FColor::Red, "Missing 'url' or 'text' in JSON.");
+            return;
         }
+
+        FString SeparateAnimationName;
+        if (JsonObject->HasField("separate_animation"))
+        {
+            JsonObject->TryGetStringField("separate_animation", SeparateAnimationName);
+        }
+
+        if (!JsonObject->HasField("speech"))
+        {
+            GEngine->AddOnScreenDebugMessage(-1, 15.0f, FColor::Red, "Missing 'speech' in JSON.");
+            return;
+        }
+
+        // Extract word information from the "speech" array
+        TArray<FSingeWordData> WordArray;
+        TArray<TSharedPtr<FJsonValue>> SpeechArray;
+        SpeechArray = JsonObject->GetArrayField("speech");
+
+        for (const auto& SpeechValue : SpeechArray)
+        {
+            TSharedPtr<FJsonObject> SpeechObject = SpeechValue->AsObject();
+            if (SpeechObject)
+            {
+                FString Word;
+                if (SpeechObject->TryGetStringField("word", Word))
+                {
+                    float Start = SpeechObject->GetNumberField("start");
+                    float End = SpeechObject->GetNumberField("end");
+
+                    WordArray.Add(FSingeWordData(Word, Start, End));
+                }
+            }
+        }
+
+
+
+        if (!JsonObject->HasField("emotions"))
+        {
+            GEngine->AddOnScreenDebugMessage(-1, 15.0f, FColor::Red, "Missing 'emotions' in JSON.");
+            return;
+        }
+
+        TArray<FSingeWordData> EmotionsList;
+        TArray<TSharedPtr<FJsonValue>> EmotionsArray;
+        EmotionsArray = JsonObject->GetArrayField("emotions");
+
+        for (const auto& EmotionValue : EmotionsArray)
+        {
+            TSharedPtr<FJsonObject> EmotionObject = EmotionValue->AsObject();
+            if (EmotionObject)
+            {
+                float Start = EmotionObject->GetNumberField("start");
+                float End = EmotionObject->GetNumberField("end");
+                float AnimIntensity = EmotionObject->GetNumberField("rate");
+
+                FString Emotion;
+                EmotionObject->TryGetStringField("emotion", Emotion);
+
+                EmotionsList.Add(FSingeWordData(Emotion, Start, End));
+            }
+        }
+
+        GEngine->AddOnScreenDebugMessage(-1, 15.0f, FColor::Green, "speech length: " + FString::FromInt(WordArray.Num()));
+
+        OnPlayAudioFile(url, text, WordArray, EmotionsList, SeparateAnimationName);
     }
-    if (EventType == "MOVE_CAMERA")
+    else if (EventType == "MOVE_CAMERA")
     {
         FString TargetCameraLocationName;
         float CameraMovementSpeed;
@@ -219,6 +230,14 @@ void ADMetaHumanPawnBase::OnSocketMessage(const FString& Message)
         if (JsonObject->TryGetStringField("name", TargetCameraLocationName) && JsonObject->TryGetNumberField("speed", CameraMovementSpeed))
         {
             OnCameraMove(TargetCameraLocationName, CameraMovementSpeed);
+        }
+    }
+    else if (EventType == "SEPARATE_ANIMATION")
+    {
+        FString SeparateAnimationName;
+        if (JsonObject->TryGetStringField("name", SeparateAnimationName))
+        {
+            OnSeparateAnimationArrived(SeparateAnimationName);
         }
     }
     else
