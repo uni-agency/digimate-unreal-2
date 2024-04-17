@@ -31,13 +31,16 @@ public:
 
 
 	UFUNCTION(BlueprintImplementableEvent)
-	void OnPlayAudioFile(const FString& AudioURL, const FString& Text, const TArray<FSingeWordData>& AudioSinge, const TArray<FSingeWordData>& Emotions) const;
+	void OnPlayAudioFile(const FString& AudioURL, const FString& Text, const TArray<FSingeWordData>& AudioSinge, const TArray<FSingeWordData>& Emotions, const FString& SeparateAnimation) const;
 
 	UFUNCTION(BlueprintImplementableEvent)
 	void OnCameraMove(const FString& TargetCameraLocationName, const float CameraMovementSpeed) const;
 
 	UFUNCTION(BlueprintImplementableEvent)
 	void OnSocketMessageReceived(const FString& type) const;
+
+	UFUNCTION(BlueprintImplementableEvent, BlueprintCallable)
+	void OnSeparateAnimationArrived(const FString& NewSeparateAnimation) const;
 
 	UFUNCTION(BlueprintPure, Category = "WebSocket")
 	FString GetEmotionByTime(float CurrentTime, const TArray<FSingeWordData>& WordArray) const;
@@ -49,8 +52,6 @@ public:
 	void ManualyParseMessage(const FString& MessageString);
 
 	void OnSocketMessage(const FString& Message);
-
-	/*FString GetEventTypeByString(ESocketEvent NewEvent);*/
 
 	TSharedPtr<IWebSocket> WebSocket;
 };
