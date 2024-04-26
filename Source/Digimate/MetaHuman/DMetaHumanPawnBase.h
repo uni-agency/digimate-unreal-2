@@ -5,6 +5,8 @@
 #include "IWebSocket.h"       // Socket definition
 #include "YnnkTypes.h"
 
+#include "Digimate/MetaHumanData/DMetaHumanOutfitDataAssetBase.h"
+
 #include "CoreMinimal.h"
 #include "GameFramework/Pawn.h"
 #include "DMetaHumanPawnBase.generated.h"
@@ -39,8 +41,14 @@ public:
 	UFUNCTION(BlueprintImplementableEvent)
 	void OnSocketMessageReceived(const FString& type) const;
 
+	UFUNCTION(BlueprintImplementableEvent)
+	void OnChangeOutfitRequestReceived(const FString& NewOutfitName) const;
+
+	UFUNCTION(BlueprintImplementableEvent)
+	void OnChangeBackgroundRequestReceived(const FString& ImageURL, const FString& NewBackgroundName) const;
+
 	UFUNCTION(BlueprintImplementableEvent, BlueprintCallable)
-	void OnSeparateAnimationArrived(const FString& NewSeparateAnimation) const;
+	void OnSeparateAnimationReceived(const FString& NewSeparateAnimation) const;
 
 	UFUNCTION(BlueprintPure, Category = "WebSocket")
 	FString GetEmotionByTime(float CurrentTime, const TArray<FSingeWordData>& WordArray) const;
@@ -54,4 +62,7 @@ public:
 	void OnSocketMessage(const FString& Message);
 
 	TSharedPtr<IWebSocket> WebSocket;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+	TMap<FString, UDMetaHumanOutfitDataAssetBase*> OutfitHandler;
 };

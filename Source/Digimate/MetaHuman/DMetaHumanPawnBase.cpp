@@ -237,9 +237,26 @@ void ADMetaHumanPawnBase::OnSocketMessage(const FString& Message)
         FString SeparateAnimationName;
         if (JsonObject->TryGetStringField("name", SeparateAnimationName))
         {
-            OnSeparateAnimationArrived(SeparateAnimationName);
+            OnSeparateAnimationReceived(SeparateAnimationName);
         }
     }
+    else if (EventType == "CHANGE_OUTFIT")
+    {
+        FString OutfitName;
+        if (JsonObject->TryGetStringField("name", OutfitName))
+        {
+            OnChangeOutfitRequestReceived(OutfitName);
+        }
+    }
+    else if (EventType == "CHANGE_BACKGROUND")
+    {
+        FString BackgroundURL;
+        FString BackgroundName;
+        if (JsonObject->TryGetStringField("url", BackgroundURL) && JsonObject->TryGetStringField("name", BackgroundName))
+        {
+            OnChangeBackgroundRequestReceived(BackgroundURL, BackgroundName);
+        }
+        }
     else
     {
         OnSocketMessageReceived(EventType);
