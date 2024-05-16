@@ -252,7 +252,7 @@ void ADMetaHumanPawnBase::OnSocketMessage(const FString& Message)
     {
         FString BackgroundURL;
         FString BackgroundName;
-        if (JsonObject->TryGetStringField("url", BackgroundURL) && JsonObject->TryGetStringField("name", BackgroundName))
+        if (JsonObject->TryGetStringField("url", BackgroundURL) || JsonObject->TryGetStringField("name", BackgroundName))
         {
             OnChangeBackgroundRequestReceived(BackgroundURL, BackgroundName);
         }
