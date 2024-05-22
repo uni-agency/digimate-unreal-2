@@ -17,6 +17,9 @@ class DIGIMATE_API UDMetaHumanOutfitDataAssetBase : public UDataAsset
 	
 public:
 	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly)
+	USkeletalMesh* HeadOutfit;
+
+	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly)
 	USkeletalMesh* TorsoOutfit;
 
 	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly)
