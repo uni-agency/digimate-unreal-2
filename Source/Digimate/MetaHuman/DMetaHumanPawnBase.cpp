@@ -218,9 +218,18 @@ void ADMetaHumanPawnBase::OnSocketMessage(const FString& Message)
             }
         }
 
+        float LipSyncIntensityHandler = LipSyncIntensity;
+        if (JsonObject->HasField("intensity"))
+        {
+            if (!JsonObject->TryGetNumberField("intensity", LipSyncIntensityHandler))
+            {
+                GEngine->AddOnScreenDebugMessage(-1, 15.0f, FColor::Red, "Can't get intensity as number");
+            }
+        }
+
         GEngine->AddOnScreenDebugMessage(-1, 15.0f, FColor::Green, "speech length: " + FString::FromInt(WordArray.Num()));
 
-        OnPlayAudioFile(url, text, WordArray, EmotionsList, SeparateAnimationName);
+        OnPlayAudioFile(url, text, WordArray, EmotionsList, SeparateAnimationName, LipSyncIntensityHandler);
     }
     else if (EventType == "MOVE_CAMERA")
     {

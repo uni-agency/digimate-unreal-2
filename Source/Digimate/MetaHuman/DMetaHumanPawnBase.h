@@ -33,7 +33,7 @@ public:
 
 
 	UFUNCTION(BlueprintImplementableEvent)
-	void OnPlayAudioFile(const FString& AudioURL, const FString& Text, const TArray<FSingeWordData>& AudioSinge, const TArray<FSingeWordData>& Emotions, const FString& SeparateAnimation) const;
+	void OnPlayAudioFile(const FString& AudioURL, const FString& Text, const TArray<FSingeWordData>& AudioSinge, const TArray<FSingeWordData>& Emotions, const FString& SeparateAnimation, const float& NewLipSyncIntensity) const;
 
 	UFUNCTION(BlueprintImplementableEvent)
 	void OnCameraMove(const FString& TargetCameraLocationName, const float CameraMovementSpeed) const;
@@ -65,4 +65,7 @@ public:
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
 	TMap<FString, UDMetaHumanOutfitDataAssetBase*> OutfitHandler;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "LipSync")
+	float LipSyncIntensity;
 };
