@@ -145,6 +145,7 @@ void ADMetaHumanPawnBase::OnSocketMessage(const FString& Message)
     if (!JsonObject->TryGetStringField("type", EventType))
     {
         GEngine->AddOnScreenDebugMessage(-1, 15.0f, FColor::Red, "Missing 'type' field in the JSON.");
+        return;
     }
 
     if (EventType == "PLAY_SOUND")
@@ -225,11 +226,24 @@ void ADMetaHumanPawnBase::OnSocketMessage(const FString& Message)
     else if (EventType == "MOVE_CAMERA")
     {
         FString TargetCameraLocationName;
-        float CameraMovementSpeed;
+        float CameraMovementSpeed = 0.f;
 
-        if (JsonObject->TryGetStringField("name", TargetCameraLocationName) && JsonObject->TryGetNumberField("speed", CameraMovementSpeed))
+        JsonObject->TryGetNumberField("speed", CameraMovementSpeed);
+
+        if (JsonObject->TryGetStringField("name", TargetCameraLocationName))
         {
-            OnCameraMove(TargetCameraLocationName, CameraMovementSpeed);
+            OnCameraMove(TargetCameraLocationName, CameraMovementSpeed, FVector());
+        }
+        else if (JsonObject->HasField("Location"))
+        {
+            float TargetCameraXValue = 0.f;
+            float TargetCameraYValue = 0.f;
+            float TargetCameraZValue = 0.f;
+
+            if(JsonObject->TryGetNumberField("x_value", TargetCameraXValue) || JsonObject->TryGetNumberField("y_value", TargetCameraYValue) || JsonObject->TryGetNumberField("z_value", TargetCameraZValue))
+            {
+                OnCameraMove(FString(), CameraMovementSpeed, FVector(TargetCameraXValue, TargetCameraYValue, TargetCameraZValue));
+            }
         }
     }
     else if (EventType == "SEPARATE_ANIMATION")
