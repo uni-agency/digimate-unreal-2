@@ -11,6 +11,8 @@
 #include "GameFramework/Pawn.h"
 #include "DMetaHumanPawnBase.generated.h"
 
+enum class EEventTypes;
+
 UCLASS()
 class DIGIMATE_API ADMetaHumanPawnBase : public APawn
 {
@@ -36,7 +38,7 @@ public:
 	void OnPlayAudioFile(const FString& AudioURL, const FString& Text, const TArray<FSingeWordData>& AudioSinge, const TArray<FSingeWordData>& Emotions, const FString& SeparateAnimation, const float& NewLipSyncIntensity) const;
 
 	UFUNCTION(BlueprintImplementableEvent)
-	void OnCameraMove(const FString& TargetCameraLocationName, const float CameraMovementSpeed) const;
+	void OnCameraMove(const FString& TargetCameraLocationName, const float CameraMovementSpeed, const FVector TargetCameraLocationVector) const;
 
 	UFUNCTION(BlueprintImplementableEvent)
 	void OnSocketMessageReceived(const FString& type) const;
@@ -44,7 +46,7 @@ public:
 	UFUNCTION(BlueprintImplementableEvent)
 	void OnChangeOutfitRequestReceived(const FString& NewOutfitName) const;
 
-	UFUNCTION(BlueprintImplementableEvent)
+	UFUNCTION(BlueprintImplementableEvent, BlueprintCallable)
 	void OnChangeBackgroundRequestReceived(const FString& ImageURL, const FString& NewBackgroundName) const;
 
 	UFUNCTION(BlueprintImplementableEvent, BlueprintCallable)
@@ -60,6 +62,8 @@ public:
 	void ManualyParseMessage(const FString& MessageString);
 
 	void OnSocketMessage(const FString& Message);
+
+	EEventTypes GetEventByName(const FString& Event);
 
 	TSharedPtr<IWebSocket> WebSocket;
 
