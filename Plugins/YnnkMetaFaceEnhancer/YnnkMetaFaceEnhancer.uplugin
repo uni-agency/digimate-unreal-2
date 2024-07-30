@@ -1,0 +1,46 @@
+{
+	"FileVersion": 3,
+	"Version": 1,
+	"VersionName": "1.0",
+	"FriendlyName": "Ynnk MetaFace Enhancer",
+	"Description": "Adding MetaHuamn facial animation and more details to Ynnk Voice Lip-sync",
+	"Category": "Animation",
+	"CreatedBy": "YuriNK",
+	"CreatedByURL": "https://vrmocapstudio.com",
+	"DocsURL": "",
+	"MarketplaceURL": "",
+	"SupportURL": "ykasczc@gmail.com",
+	"EngineVersion": "5.4.0",
+	"CanContainContent": false,
+	"Installed": true,
+	"Modules": [
+		{
+			"Name": "YnnkMetaFaceEnhancer",
+			"Type": "Runtime",
+			"LoadingPhase": "Default",
+			"PlatformAllowList": [
+				"Win64",
+				"Android"
+			]
+		},
+		{
+			"Name": "YnnkMetaFaceUncooked",
+			"Type": "UncookedOnly",
+			"LoadingPhase": "Default",
+			"PlatformAllowList": [
+				"Win64"
+			]
+		}
+	],
+	"Plugins": [
+		{
+			"Name": "YnnkVoiceLipsync",
+			"Enabled": true,
+			"MarketplaceURL": "com.epicgames.launcher://ue/marketplace/content/2d26886016024a6f870c03faee3ad696"
+		},
+		{
+			"Name": "SimplePyTorch",
+			"Enabled": true
+		}
+	]
+}
