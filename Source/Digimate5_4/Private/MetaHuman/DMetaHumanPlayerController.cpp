@@ -127,10 +127,26 @@ void ADMetaHumanPlayerController::OnSocketMessage(const FString& Message)
             return;
         }
 
-        FString SeparateAnimationName;
-        if (JsonObject->HasField("separate_animation"))
+        TArray<FPlaySeparateAnim> AnimationList;
+        if (JsonObject->HasField("animations"))
         {
-            JsonObject->TryGetStringField("separate_animation", SeparateAnimationName);
+            TArray<TSharedPtr<FJsonValue>> SeparateAnimationsArray;
+            SeparateAnimationsArray = JsonObject->GetArrayField("animations");
+
+            for (const auto& AnimationValue : SeparateAnimationsArray)
+            {
+                TSharedPtr<FJsonObject> AnimationObject = AnimationValue->AsObject();
+                if (AnimationObject)
+                {
+                    float Start = AnimationObject->GetNumberField("start");
+                    float End = AnimationObject->GetNumberField("end");
+
+                    FString Animation;
+                    AnimationObject->TryGetStringField("animation", Animation);
+
+                    AnimationList.Add(FPlaySeparateAnim(Animation, Start, End));
+                }
+            }
         }
 
         if (!JsonObject->HasField("speech"))
@@ -199,7 +215,7 @@ void ADMetaHumanPlayerController::OnSocketMessage(const FString& Message)
 
         GEngine->AddOnScreenDebugMessage(-1, 15.0f, FColor::Green, "speech length: " + FString::FromInt(WordArray.Num()));
 
-        CurrentPossessedMH->SetUpNewAudioToPlay(url, text, WordArray, EmotionsList, SeparateAnimationName, LipSyncIntensityHandler);
+        CurrentPossessedMH->SetUpNewAudioToPlay(url, text, WordArray, EmotionsList, AnimationList, LipSyncIntensityHandler);
     }
     else if (EventType == "MOVE_CAMERA")
     {

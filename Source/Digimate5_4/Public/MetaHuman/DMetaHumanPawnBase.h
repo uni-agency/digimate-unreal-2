@@ -14,7 +14,17 @@
 #include "GameFramework/Pawn.h"
 #include "DMetaHumanPawnBase.generated.h"
 
-USTRUCT()
+USTRUCT(BlueprintType)
+struct FPlaySeparateAnim
+{
+	GENERATED_USTRUCT_BODY()
+public:
+	FString SeparateAnimName;
+	float Start;
+	float End;
+};
+
+USTRUCT(BlueprintType)
 struct FPlayAudioStruct
 {
 	GENERATED_USTRUCT_BODY()
@@ -24,7 +34,7 @@ public:
 	FString Text;
 	TArray<FSingeWordData> AudioSinge;
 	TArray<FSingeWordData> Emotions;
-	FString SeparateAnimation;
+	TArray<FPlaySeparateAnim> SeparateAnimations;
 	float NewLipSyncIntensity;
 	UYnnkVoiceLipsyncData* LipsyncDataToSpeak;
 };
@@ -74,8 +84,11 @@ public:
 	void OnMicActivateRequestReceived() const;
 	///////////////////////////////////////////////////////
 
-	UFUNCTION(BlueprintPure, Category = "WebSocket")
+	UFUNCTION(BlueprintPure, Category = "Emotion Getter")
 	FString GetEmotionByTime(float CurrentTime, const TArray<FSingeWordData>& WordArray) const;
+
+	UFUNCTION(BlueprintPure, Category = "Anim Getter")
+	FString GetAnimationByTime(float CurrentTime, const TArray<FPlaySeparateAnim>& AnimArray) const;
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
 	TMap<FString, UDMetaHumanOutfitDataAssetBase*> OutfitHandler;
@@ -97,6 +110,12 @@ public:
 	UPROPERTY(BlueprintReadWrite)
 	int32 AudioPlayedMaxPos = 0;
 
+	UPROPERTY(BlueprintReadOnly)
+	TArray<FSingeWordData> CurrentLipsyncEmotionsData;
+
+	UPROPERTY(BlueprintReadOnly)
+	TArray<FPlaySeparateAnim> CurrentSeparateAnimations;
+
 	FOnFileToMemoryDownloadCompleteWithPosition OnFileDownloaded;
 
 	UFUNCTION(BlueprintCallable)
@@ -106,7 +125,7 @@ public:
 	void ClearAudioData();
 
 	UFUNCTION(BlueprintCallable)
-	void SetUpNewAudioToPlay(FString& AudioURL, FString& Text, TArray<FSingeWordData>& AudioSinge, TArray<FSingeWordData>& Emotions, FString& SeparateAnimation, float& NewLipSyncIntensity);
+	void SetUpNewAudioToPlay(FString& AudioURL, FString& Text, TArray<FSingeWordData>& AudioSinge, TArray<FSingeWordData>& Emotions, TArray<FPlaySeparateAnim>& Animations, float& NewLipSyncIntensity);
 
 	void DownloadFileByURL(FString& URL, int32 Position);
 
