@@ -41,9 +41,25 @@ FString ADMetaHumanPawnBase::GetEmotionByTime(float CurrentTime, const TArray<FS
     return CurrentEmotion;
 }
 
+FString ADMetaHumanPawnBase::GetAnimationByTime(float CurrentTime, const TArray<FPlaySeparateAnim>& AnimArray) const
+{
+    FString CurrentAnimation;
+
+    for (const FPlaySeparateAnim& AnimData : AnimArray)
+    {
+        if (CurrentTime >= AnimData.Start && CurrentTime <= AnimData.End)
+        {
+            CurrentAnimation = AnimData.SeparateAnimName;
+            break;
+        }
+    }
+
+    return CurrentAnimation;
+}
+
 UYnnkVoiceLipsyncData* ADMetaHumanPawnBase::GetNextLipsyncDataToSkeak()
 {
-    for (auto Iter : AudioData)
+    for (FPlayAudioStruct& Iter : AudioData)
     {
         if (Iter.Position == AudioPlayedPosition)
         {
@@ -54,17 +70,23 @@ UYnnkVoiceLipsyncData* ADMetaHumanPawnBase::GetNextLipsyncDataToSkeak()
                     AudioPlayedPosition = 1;
                     AudioPlayedMaxPos = 0;
 
+                    CurrentLipsyncEmotionsData = Iter.Emotions;
+                    CurrentSeparateAnimations = Iter.SeparateAnimations;
+
                     return Iter.LipsyncDataToSpeak;
                 }
 
                 AudioPlayedPosition++;
+
+                CurrentLipsyncEmotionsData = Iter.Emotions;
+                CurrentSeparateAnimations = Iter.SeparateAnimations;
 
                 return Iter.LipsyncDataToSpeak;
             }
         }
 
     }
-
+    
     return nullptr;
 }
 
@@ -73,11 +95,11 @@ void ADMetaHumanPawnBase::ClearAudioData()
     AudioData.Empty();
 }
 
-void ADMetaHumanPawnBase::SetUpNewAudioToPlay(FString& AudioURL, FString& Text, TArray<FSingeWordData>& AudioSinge, TArray<FSingeWordData>& Emotions, FString& SeparateAnimation, float& NewLipSyncIntensity)
+void ADMetaHumanPawnBase::SetUpNewAudioToPlay(FString& AudioURL, FString& Text, TArray<FSingeWordData>& AudioSinge, TArray<FSingeWordData>& Emotions, TArray<FPlaySeparateAnim>& Animations, float& NewLipSyncIntensity)
 {
     DownloadFileByURL(AudioURL, ++AudioPlayedMaxPos);
 
-    AudioData.Add(FPlayAudioStruct(AudioURL, AudioPlayedMaxPos, Text, AudioSinge, Emotions, SeparateAnimation, NewLipSyncIntensity, nullptr));
+    AudioData.Add(FPlayAudioStruct(AudioURL, AudioPlayedMaxPos, Text, AudioSinge, Emotions, Animations, NewLipSyncIntensity, nullptr));
 }
 
 void ADMetaHumanPawnBase::DownloadFileByURL(FString& URL, int32 Position)
